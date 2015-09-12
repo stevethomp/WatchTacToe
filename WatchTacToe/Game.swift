@@ -33,6 +33,7 @@ class Game: NSObject, GKGameModel {
     func setGameModel(gameModel: GKGameModel) {
         if let game = gameModel as? Game {
             currentPlayer = game.currentPlayer
+            board = game.board
         }
     }
     
@@ -76,7 +77,6 @@ class Game: NSObject, GKGameModel {
                 return -1000
             }
         }
-        
         return 0
     }
     

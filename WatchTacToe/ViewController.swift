@@ -33,7 +33,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         gameLabel.text = game.currentPlayer.name
         
         strategist = GKMinmaxStrategist()
-        strategist.maxLookAheadDepth = 1000
+        strategist.maxLookAheadDepth = 2
         strategist.randomSource = GKARC4RandomSource()
         
         resetGame()
