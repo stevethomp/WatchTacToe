@@ -1,8 +1,8 @@
 //
 //  ViewController.swift
-//  WatchTacToe
+//  TVTacToe
 //
-//  Created by Steven Thompson on 2015-09-05.
+//  Created by Steven Thompson on 2015-09-11.
 //  Copyright © 2015 stevethomp. All rights reserved.
 //
 
@@ -13,20 +13,24 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var playAgainButton: UIButton!
     @IBOutlet weak var gameLabel: UILabel!
-    
+
     var game = Game()
     var strategist: GKMinmaxStrategist!
     
     var player1Color = UIColor.redColor()
     var player2Color = UIColor.blueColor()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         collectionView.registerClass(GameCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         playAgainButton.hidden = true
         
-        gameLabel.text = game.currentPlayer.name
+        if game.currentPlayer.playerColor == .Blue {
+            gameLabel.text = "Your turn"
+        } else {
+            gameLabel.text = "AI turn"
+        }
         
         strategist = GKMinmaxStrategist()
         strategist.maxLookAheadDepth = 2
@@ -34,11 +38,11 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         
         resetGame()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-
+        
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
@@ -58,10 +62,10 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! GameCollectionViewCell
-
+        
         cell.playCell(game.currentPlayer.color)
         let rowColumn = game.rowAndColumnForIndexPath(indexPath)
-    
+        
         game.playRow(rowColumn.row, column: rowColumn.column, player: game.currentPlayer)
         
         nextTurn()
@@ -78,7 +82,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         let cell = collectionView.cellForItemAtIndexPath(game.indexPathForMove(move)) as! GameCollectionViewCell
         cell.playCell(game.currentPlayer.color)
         game.playRow(move.row, column: move.column, player: game.currentPlayer)
-
+        
         nextTurn()
     }
     
@@ -120,17 +124,31 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             startAIMove()
         } else {
             collectionView.userInteractionEnabled = true
+            
+            setNeedsFocusUpdate()
+            updateFocusIfNeeded()
         }
-
-        gameLabel.text = game.currentPlayer.name
+        
+        if game.currentPlayer.playerColor == .Blue {
+            gameLabel.text = "Your turn"
+        } else {
+            gameLabel.text = "AI turn"
+        }
     }
     
     func showWin() {
-        gameLabel.text = "\(game.currentPlayer.name) Won!"
+        if game.currentPlayer.playerColor == .Blue {
+            gameLabel.text = "You win!"
+        } else {
+            gameLabel.text = "AI won :("
+        }
         
         playAgainButton.hidden = false
         
         collectionView.userInteractionEnabled = false
+        
+        setNeedsFocusUpdate()
+        updateFocusIfNeeded()
     }
     
     func showDraw() {
@@ -139,17 +157,41 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         playAgainButton.hidden = false
         
         collectionView.userInteractionEnabled = false
+        
+        setNeedsFocusUpdate()
+        updateFocusIfNeeded()
     }
     
     @IBAction func resetGame() {
         game = Game()
         strategist.gameModel = game
         
-        gameLabel.text = game.currentPlayer.name
+        if game.currentPlayer.playerColor == .Blue {
+            gameLabel.text = "Your turn"
+        } else {
+            gameLabel.text = "AI turn"
+        }
         playAgainButton.hidden = true
         
         collectionView.reloadData()
         collectionView.userInteractionEnabled = true
+        
+        setNeedsFocusUpdate()
+        updateFocusIfNeeded()
+    }
+    
+    override func didUpdateFocusInContext(context: UIFocusUpdateContext, withAnimationCoordinator coordinator: UIFocusAnimationCoordinator) {
+        super.didUpdateFocusInContext(context, withAnimationCoordinator: coordinator)
+        if let cell = context.nextFocusedView as? GameCollectionViewCell {
+            cell.layer.borderColor = UIColor.blueColor().CGColor
+            cell.layer.borderWidth = 3.0
+        }
+        
+        if let cell = context.previouslyFocusedView as? GameCollectionViewCell {
+            cell.layer.borderColor = UIColor.clearColor().CGColor
+            cell.layer.borderWidth = 0.0
+        }
+        
     }
 }
 

@@ -27,6 +27,7 @@ class Game: NSObject, GKGameModel {
     func copyWithZone(zone: NSZone) -> AnyObject {
         let copy = Game()
         copy.setGameModel(self)
+        board = copy.board
         return copy
     }
     

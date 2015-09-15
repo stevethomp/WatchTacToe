@@ -14,6 +14,10 @@ enum TileStatus: String {
     case Empty
 }
 
+enum PlayerColor: Int {
+    case Red, Blue
+}
+
 class Player: NSObject, GKGameModelPlayer {
     var playerColor: PlayerColor
     var color: UIColor
@@ -28,10 +32,10 @@ class Player: NSObject, GKGameModelPlayer {
         
         if playerColor == .Red {
             self.color = .redColor()
-            self.name = "Red"
+            self.name = "AI"
         } else {
             self.color = .blueColor()
-            self.name = "Blue"
+            self.name = "Your"
         }
         
         super.init()
